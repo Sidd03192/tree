@@ -10,10 +10,10 @@ import java.util.List;
 
  
 public class BinarySearchIntTree  {
-	private int size;
-	private IntTreeNode overallRoot;
-	private int largest=Integer.MIN_VALUE;
-	private int smallest=Integer.MAX_VALUE;
+	public int size;
+	public IntTreeNode overallRoot;
+	public int largest=Integer.MIN_VALUE;
+	public int smallest=Integer.MAX_VALUE;
 	
 	public BinarySearchIntTree() {
 		overallRoot = null;
@@ -206,10 +206,12 @@ public class BinarySearchIntTree  {
 				node.left=null;
 			else if(guy.left!=null && guy.right!=null) // if both child
 			{
+				// we have to check if hte right has children first.....
+
 				int newdata =minNode(guy.right).data;
 				
 				remove(newdata, guy); // removes teh copy
-				guy.data=minNode(guy.right).data; // " removes the one we wnat to remove and replaces"
+				guy.data=newdata; // " removes the one we wnat to remove and replaces"
 			}
 			else {
 				node.left = (guy.left != null) ? guy.left : guy.right;
@@ -270,14 +272,15 @@ public class BinarySearchIntTree  {
 
     public static void main(String args[]) 
     {
-		ArrayList<Integer> nodes = new ArrayList<Integer>();
-		nodes.add(7);
-		nodes.add(4);
-		nodes.add(10);
-		nodes.add(3);
-		nodes.add(6);
-		nodes.add(9);
-		nodes.add(13);
+		int[] elements = {18, 12, 35, 4, 15, 22, 58, -2, 7, 13, 16, 19, 31, 40, 87};
+
+        // Create an ArrayList called nodes
+        ArrayList<Integer> nodes = new ArrayList<>();
+
+        // Add elements to the nodes ArrayList
+        for (int element : elements) {
+            nodes.add(element);
+        }
 
     	BinarySearchIntTree tree = new BinarySearchIntTree(nodes);
         // tree.add(7);
@@ -294,7 +297,7 @@ public class BinarySearchIntTree  {
 		System.out.println("Smallest: "+tree.smallest());
 		System.out.println("Largest:" +tree.largest());
 		System.out.println("CountLeaves: " + tree.countLeaves());
-		tree.remove(7);
+		tree.remove(22);
 		System.out.println("Removed: "+ tree.toString());
     }
     
