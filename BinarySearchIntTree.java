@@ -24,9 +24,9 @@ public class BinarySearchIntTree  {
 		overallRoot.left=null; overallRoot.right = null;
 	} 
 	public BinarySearchIntTree( ArrayList<Integer>list){ // check!!!
-		for(int i=0; i<list.size(); i++)	
+		for( int k:list)
 		{
-			this.add(i);
+			add(k);
 		}
 
 	}
@@ -106,13 +106,35 @@ public class BinarySearchIntTree  {
 	{
 		if (isEmpty())
 			throw new IllegalStateException();
-		return smallest;//return smallest value
+		if (overallRoot.right==null)
+			return overallRoot.data;
+		return smallest(overallRoot.left);
+			
+	}
+	private int smallest(IntTreeNode node)
+	{
+		if(node.left!=null)
+			return smallest(node.left);
+		return node.data;
 	}
 	public int largest()
 	{
 		if (isEmpty())
 			throw new IllegalStateException();
-		return largest; // returns largest value
+		
+		if (overallRoot.right==null)
+			return overallRoot.data;
+		return largest(overallRoot.right);
+
+
+
+	}
+	private int largest(IntTreeNode node){		
+		if (node.right!=null)
+		{
+			return largest(node.right);
+		}
+		return node.data;
 	}
 	public boolean isEmpty()
 	{
@@ -140,7 +162,7 @@ public class BinarySearchIntTree  {
 
 		return countLeaves(overallRoot); // gets help from the next method
 	}
-	private int countLeaves(IntTreeNode root)// wrong
+	private int countLeaves(IntTreeNode root)// recursies the tree to find nodes with no children.
 	{
 
 		int a =0;
@@ -157,89 +179,69 @@ public class BinarySearchIntTree  {
 	}
 	
 	public boolean remove(int value){
-
 		if (!contains(value))   // if dont contain, then return false
 			return false;
+		
+		if (overallRoot.data ==value && countLeaves(overallRoot)>0)
+		{
+			int newData =minNode ((overallRoot.right!=null)?overallRoot.right:overallRoot.left).data; // if possible get teh right min node
+			remove(newData);
+			overallRoot.data = newData;
+
+		}
+		
 		size--;
-		return remove(value, overallRoot); // gets help from next method
+		 remove(value, overallRoot); // gets help from next method
+		 return true;
 	}
-	public boolean remove(int value, IntTreeNode node)
+	public void remove(int value, IntTreeNode node) // node is the parent
 	{
-		boolean a= false;
-		if ( node.data==value) // if you found the node... then remove it
+		if (node==null) // to prevent infinite recursion
+			return;
+		
+		if (node.left!=null && node.left.data==value) // // if we find the value in the left of parent
 		{
-			IntTreeNode temp1= node.left!=null ? node.left : null;
-			IntTreeNode temp2= node.right!=null ? node.right:null;
-			if (node.left==null && node.right==null) // if no children
+			IntTreeNode guy = node.left;
+			if(guy.left==null && guy.right==null) // if no child
+				node.left=null;
+			else if(guy.left!=null && guy.right!=null) // if both child
 			{
-
-				getThroughParent(overallRoot,value);
-				return true;
-
-			}
-			if (node.right!=null &&node.left!=null) // both children case ( smallest value from right)
-			{
-				System.out.println("foudn it " + node.data);
-
-				IntTreeNode newroot= minNode(overallRoot);
-				newroot.left=overallRoot.left; newroot.right=overallRoot.right; // updates children of new root
-					
-				overallRoot=newroot; // updates root to new one.
-				node=null; // updates the current node and sets to null
+				int newdata =minNode(guy.right).data;
 				
-
-				return true;
+				remove(newdata, guy); // removes teh copy
+				guy.data=minNode(guy.right).data; // " removes the one we wnat to remove and replaces"
 			}
+			else {
+				node.left = (guy.left != null) ? guy.left : guy.right;
+			}
+		}
+		else if (node.right != null && node.right.data == value) {
+			IntTreeNode guy = node.right; 
+			if (guy.left == null && guy.right == null) {
+				node.right = null;
+			} 
+			else if (guy.left != null && guy.right != null) {
+				IntTreeNode minRight = minNode(guy.right);
+				guy.data = minRight.data; 
+				remove(minRight.data, guy); 
+			} 
+			// If the node to remove has only one child, bypass it by adjusting the parent's reference
+			else {
+				node.right = (guy.left != null) ? guy.left : guy.right;
+			}
+		}
 
-
-			if (temp1!=null)
-				node=node.left;
-			else if (temp2!=null) 
-				node=node.right;
-		}	
-
-		if (node.left!=null) // check left for node
-		{
+		// recurse until find the guy
 			remove(value, node.left);
-		}
-		if(node.right!=null)  // check right for node we want
-		{
+		
 			remove(value,node.right);
-		}
-		return a;
+		
+	
+		
 	}
-public void getThroughParent( IntTreeNode node,int value){
-	
-	if (node.left!=null && node.left.data==value) 
-		node.left=null;
-	if(node.right!=null && node.right.data==value) 
-	{
-		node.right=null;
-	}
-	
-	if (node.left!=null)
-		{
-			getThroughParent(node.left,value);
-		}
-	if(node.right!=null)
-		{
-			getThroughParent(node.right,value);
-		}
 
 	
-}
 
-
-
-
-
-
-
-
-
-
-
-	
 	public String toString(){
 
 		return toString(overallRoot,""); // returns a string representation of the tree in in order
@@ -269,14 +271,22 @@ public void getThroughParent( IntTreeNode node,int value){
     public static void main(String args[]) 
     {
 		ArrayList<Integer> nodes = new ArrayList<Integer>();
-    	BinarySearchIntTree tree = new BinarySearchIntTree();
-        tree.add(7);
-		tree.add(4);
-		tree.add(3);
-		tree.add(6);
-		tree.add(10);
-		tree.add(9);
-		tree.add(11);
+		nodes.add(7);
+		nodes.add(4);
+		nodes.add(10);
+		nodes.add(3);
+		nodes.add(6);
+		nodes.add(9);
+		nodes.add(13);
+
+    	BinarySearchIntTree tree = new BinarySearchIntTree(nodes);
+        // tree.add(7);
+		// tree.add(4);
+		// tree.add(10);
+		// tree.add(3);
+		// tree.add(6);
+		// tree.add(9);
+		// tree.add(13);
 
         
         System.out.println("Size of the tree: " + tree.getSize());
@@ -284,8 +294,8 @@ public void getThroughParent( IntTreeNode node,int value){
 		System.out.println("Smallest: "+tree.smallest());
 		System.out.println("Largest:" +tree.largest());
 		System.out.println("CountLeaves: " + tree.countLeaves());
-		//tree.remove(7);
-		//System.out.println("Removed: "+ tree.toString());
+		tree.remove(7);
+		System.out.println("Removed: "+ tree.toString());
     }
     
 }
