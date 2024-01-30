@@ -40,6 +40,7 @@ public class BinarySearchIntTree  {
 	}
 	public void clear(){ // clears the tree
 		overallRoot.left=null; overallRoot.right=null;overallRoot=null;
+		size=0;
 
 	}
 	public boolean add(int value) {
@@ -48,6 +49,7 @@ public class BinarySearchIntTree  {
         overallRoot.left = null;
         overallRoot.right = null;
         size++;
+		
         return true;
     }
     if (value > largest) {
@@ -82,7 +84,9 @@ public class BinarySearchIntTree  {
 
 	public boolean contains(int value)
 	{
+		
 		IntTreeNode temp = overallRoot;
+		if (temp==null) return false;
 		if(temp.data==value){return true;}
 		while (true)
 		{
@@ -142,6 +146,8 @@ public class BinarySearchIntTree  {
 	}
 	private static IntTreeNode minNode (IntTreeNode root)
 	{
+		if ( root==null)
+			return null;
 		IntTreeNode temp = root;// creates a temp 
 		while (true){
 						// loops through temp and finds left most value. 
@@ -159,11 +165,12 @@ public class BinarySearchIntTree  {
 	public int countLeaves(){
 		if (isEmpty()){return 0;}  // if empty return 0
 		
-
+		
 		return countLeaves(overallRoot); // gets help from the next method
 	}
 	private int countLeaves(IntTreeNode root)// recursies the tree to find nodes with no children.
 	{
+		
 
 		int a =0;
 		if (root.left == null && root.right == null)
@@ -182,8 +189,9 @@ public class BinarySearchIntTree  {
 		if (!contains(value))   // if dont contain, then return false
 			return false;
 		
-		if (overallRoot.data ==value && countLeaves(overallRoot)>0)
+		if (overallRoot.data ==value && (overallRoot.left !=null || overallRoot.right !=null))
 		{
+			System.out.println("has children");
 			int newData =minNode ((overallRoot.right!=null)?overallRoot.right:overallRoot.left).data; // if possible get teh right min node
 			remove(newData);
 			overallRoot.data = newData;
@@ -250,9 +258,8 @@ public class BinarySearchIntTree  {
 	}
 	private String toString(IntTreeNode node, String a) // recursively runs through the tree and creates a string representation fo the tree. Its a helper method for the toString()
 	{
-		if(size == 0)
+		if(size == 0 || node ==null)
 			return "";
-		String b="";
 		if (node.left!=null)
 			a=toString(node.left, a); // updates a with left branch
 			 
@@ -272,7 +279,7 @@ public class BinarySearchIntTree  {
 
     public static void main(String args[]) 
     {
-		int[] elements = {18, 12, 35, 4, 15, 22, 58, -2, 7, 13, 16, 19, 31, 40, 87};
+		int[] elements = {18};
 
         // Create an ArrayList called nodes
         ArrayList<Integer> nodes = new ArrayList<>();
@@ -297,8 +304,31 @@ public class BinarySearchIntTree  {
 		System.out.println("Smallest: "+tree.smallest());
 		System.out.println("Largest:" +tree.largest());
 		System.out.println("CountLeaves: " + tree.countLeaves());
-		tree.remove(22);
+		tree.remove(18);
 		System.out.println("Removed: "+ tree.toString());
+		System.out.println("Size of the tree: " + tree.getSize());
+		// System.out.println("Smallest: "+tree.smallest());
+		// System.out.println("Largest:" +tree.largest());
+		if ((tree.overallRoot)==null){
+			System.out.println(" overallRoot is null");
+		};
+		if (minNode(tree.overallRoot)==null){
+			System.out.println(" minNode is working");
+		};
+		System.out.println("adding-------------------------------");
+		tree.add(7);
+		tree.add(4);
+		tree.add(10);
+		tree.add(3);
+		tree.add(6);
+		tree.add(9);
+		tree.add(13);
+		tree.remove(4);
+		tree.clear();
+	
+		System.out.println("Tree elements: " + tree.toString());
+		System.out.println(tree.overallRoot==null);
+		tree.add(99);
     }
     
 }
